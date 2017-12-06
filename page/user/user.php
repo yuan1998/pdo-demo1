@@ -1,4 +1,8 @@
 <?php session_start();
+	if($_SESSION['user']['permissions'] < 2){
+		echo "404访问失败,权限不足.";
+		die();
+	}
  ?>
 <!DOCTYPE html>
 <html lang="zh-cn">

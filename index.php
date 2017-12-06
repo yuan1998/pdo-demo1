@@ -1,6 +1,13 @@
 <?php 
+session_start();
 require_once('utility/help.php');
+tpl('api/open');
 $name = $_SERVER['REQUEST_URI'];
+
+if(strpos($name,'/a/') !== false){
+	init($name);
+	return;
+}
 
 switch($name){
 	case '/home':

@@ -4,7 +4,7 @@ $(function(){
 	window.Model = function Model(model){
 		if(!model)
 			throw('model Error.');
-		this.url = '/api/open.php?model='+model;
+		this.url = '/a/'+model;
 		this.list = [];
 		// this.init = functon() {
 		// 	this.el = document.querySelector(elSelector);
@@ -13,7 +13,7 @@ $(function(){
 	}
 
 	Model.prototype.read = function(data,callback,el){
-		$.post(this.url+'&action=read',data).then(function(res){
+		$.post(this.url+'/read',data).then(function(res){
 			this.list = res;
 			if(callback)
 				callback(res.data,el);
@@ -21,26 +21,26 @@ $(function(){
 	}
 
 	Model.prototype.add = function(data,callback){
-		$.post(this.url+'&action=add',data)
+		$.post(this.url+'/add',data)
 		.then(function(res){
 			if(!res.success)
 				callback(res.msg);
 		})
 	}
 	Model.prototype.update = function(data,callback){
-		$.post(this.url+'&action=update',data).then(function(res){
+		$.post(this.url+'/update',data).then(function(res){
 			if(!res.success)
 				callback(res.msg);
 		})
 	}
 	Model.prototype.delete = function(id,callback){
-		$.post(this.url+'&action=remove&id='+id).then(function(res){
+		$.post(this.url+'/remove?id='+id).then(function(res){
 			if(!res.success)
 				callback(res.msg);
 		})
 	}
 	Model.prototype.count = function(callback){
-		$.get(this.url+'&action=getCount',function(res){
+		$.get(this.url+'/getCount',function(res){
 			if(res.success)
 				callback(res.data);
 		})

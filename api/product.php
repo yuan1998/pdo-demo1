@@ -1,6 +1,5 @@
 <?php
 
-require_once('./model.php');
 
 class Product extends Model{
  	
@@ -16,8 +15,6 @@ class Product extends Model{
 	}
 
 	public function add($par){
-		if(!$this->he_permission(2))
-			return e('权限不足');
 		$data = [
 			'cover_src' => @$par['cover_src'],
 			'title' => @$par['title'],
@@ -28,7 +25,7 @@ class Product extends Model{
 		];
 		if(!$data['title'] ||!is_numeric($data['price'])||!is_numeric($data['stock'])||!$this->catExists((int)$data['cat']))
 			return e('params error');
-		$r = $this->_add(['condition'=>$data]);
+		$r = $this->_add($data);
 		return $r? s() : e('未知错误');
 	}
 
@@ -58,8 +55,6 @@ class Product extends Model{
 	}
 
 	public function remove($par){
-		if(!$this->he_permission(2))
-			return e('权限不足');
 		$id = $par['id'];
 		if(!is_numeric($id))
 			return e('id type error');
@@ -72,8 +67,6 @@ class Product extends Model{
 
 
 	public function update($par){
-		if(!$this->he_permission(2))
-			return e('权限不足');
 		$id = $par['id'];
 		$oldData = $this->id_exists($id);
 		if(!$oldData)
@@ -89,11 +82,8 @@ class Product extends Model{
 	}
 
 	public function test($par){
-		$r = $this->_update(
-			[
-				'id'=>69,
-				'condition'=>['title'=>'111','price'=>'1111']
-			]
+		$r = $this->_add(
+			['title'=>'111','price'=>'1111','cat'=>1]
 		);
 		var_dump($r);
 	}

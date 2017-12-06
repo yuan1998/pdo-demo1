@@ -20,7 +20,7 @@
 				} ?>
 			</ul>
 			<ul class="col-xs-3 col-md-3 nav navbar-nav navbar-right">
-				?<php if($_SESSION['user']){
+				<?php if($_SESSION['user']){
 					echo "<li><a href='/user/{$_SESSION['user']['id']}'>{$_SESSION['user']['username']}</a></li>
 						<li><a href='' class='loginout'>Loginout</a></li>
 					";

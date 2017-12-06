@@ -59,25 +59,37 @@ class Model {
 		return $r->fetch(PDO::FETCH_NUM)[0];
 	}
 
-	public function _add($param){
-		$condition = $param['condition'];
-		$sql_value = $sql_col = '';
-		$i = 0;
+	public function descTable(){
+		$r = $this->pdo->prepare("desc $this->table");
+		$r->execute();
+		return $r->fetchAll(2);
+	}
 
-		foreach ($condition as $key => $value) {
-			$col = "$key";
-			$value = "'{$value}'";
-			if($i>0){
-				$col = ",$col";
-				$value = ",$value";
-			}
-			$sql_value .= $value;
-			$sql_col .= $col;
-			$i++; 
+	public function columnList(){
+		$list = $this->descTable();
+		$nList = [];
+		foreach($list as $col){
+			$nList[] = $col['Field'];
 		}
-		$sql_value = " ($sql_value) ";
-		$sql_col = " ($sql_col) ";
-		$sql ="insert into $this->table $sql_col values $sql_value ";
+		return $nList;
+	}
+
+
+
+	public function _add($param){
+		$condition = $param;
+		$sql_value = $sql_col = '';
+		$colName = $this->columnList();
+		unset($condition['id']);
+		foreach ($condition as $key => $value) {
+			if(in_array($key, $colName)){
+				$sql_col .= "$key,";
+				$sql_value .= "'{$value}',";	
+			}
+		}
+		$sql_value = trim($sql_value,',');
+		$sql_col = trim($sql_col,',');
+		$sql ="insert into $this->table ($sql_col) values ($sql_value) ";
 		$r = $this->pdo->prepare($sql)->execute();
 		return $r;
 	}
@@ -101,6 +113,7 @@ class Model {
 	}
 
 	public function _update($param){
+
 		$where = $param['where'];
 		$data = $param['condition'];
 		if(!$where)
@@ -124,6 +137,8 @@ class Model {
 			$sql_set .= $cond;
 		}
 		$sql = "update $this->table $sql_set $sql_where";
+		// var_dump($sql);
+		// die();
 		$r = $this->pdo->prepare($sql)->execute();
 		return $r;
 	}

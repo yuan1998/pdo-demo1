@@ -17,7 +17,7 @@ class Cat extends Model{
 		if($data['pid'] != 0)
 			if(!$this->id_verify($data['pid']))
 				return e('pid error');
-		$r = $this->_add(['condition'=>$data]);
+		$r = $this->_add($data);
 		return $r ? s() : e('未知错误.');
 	}
 
