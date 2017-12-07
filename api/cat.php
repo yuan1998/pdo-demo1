@@ -106,6 +106,7 @@ class Cat extends Model{
 			if($value['pid'] != 0)
 				$trees[$value['pid']]['children'][] = &$trees[$key];
 		}
+		
 		foreach ($trees as $key => $value) {
 			if($value['pid'] != 0){
 				unset($trees[$key]);

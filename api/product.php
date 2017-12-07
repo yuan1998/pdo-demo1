@@ -82,8 +82,8 @@ class Product extends Model{
 	}
 
 	public function test($par){
-		$r = $this->_add(
-			['title'=>'11','price'=>11,'stock'=>11123]
+		$r = $this->_read(
+			['like'=>['title'=>'11','price'=>11]]
 		);
 		var_dump($r);
 		// 'where'=>['title'=>'111','price'=>111],
