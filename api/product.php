@@ -83,9 +83,10 @@ class Product extends Model{
 
 	public function test($par){
 		$r = $this->_add(
-			['title'=>'111','price'=>'1111','cat'=>1]
+			['title'=>'11','price'=>11,'stock'=>11123]
 		);
 		var_dump($r);
+		// 'where'=>['title'=>'111','price'=>111],
 	}
 }
 
