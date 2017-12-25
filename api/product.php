@@ -5,28 +5,45 @@ class Product extends Model{
  	
  	public $pdo;
  	public $table = 'product';
+ 	public $rule = [
+ 		'id'=>'int|positive|only:id',
+ 		'title'=>'maxlength:50|minlength:4',
+ 		'price'=>'num|positive',
+ 		'info'=>'string',
+ 		// 'cover_src'=>'string',
+ 		'cat'=>'int|positive',
+ 		'stock'=>'int|positive',
+ 		'hot'=>'bool',
+ 		'new'=>'bool',
+ 		'limit'=>'int|positives',
+ 		'page'=>'int|positive'
+ 	];
+ 	public $unempty = ['title','price','cat'];
 
 	public function __construct($pdo){
 		$this->pdo = $pdo;
+		parent::__construct();
+
 	}
 
 	public function he_permission($level){
 		return @$_SESSION['user']['permissions'] >= $level ;
 	}
 
+	public function filterFormData($data){
+		$r = [];
+		foreach ($data as $key => $value) {
+			if(in_array($key,$this->structureField))
+				$r[$key] = $value;
+		}
+		return $r;
+	}
+
 	public function add($par){
-		$data = [
-			'cover_src' => @$par['cover_src'],
-			'title' => @$par['title'],
-			'price' => @$par['price'],
-			'cat' => @$par['cat'],
-			'info' => @$par['info'],
-			'stock' => @$par['stock'] ?: 0,
-		];
-		if(!$data['title'] ||!is_numeric($data['price'])||!is_numeric($data['stock'])||!$this->catExists((int)$data['cat']))
-			return e('params error');
-		$r = $this->_add($data);
-		return $r? s() : e('未知错误');
+
+		$data = $this->filterFormData($par);
+		$r = $this->_add($data,$error);
+		return $r? s() : e($error);
 	}
 
 	public function catExists($id){
@@ -36,15 +53,9 @@ class Product extends Model{
 	}
 
 	public function read($par){
-		if($par['page'])
-			if(!is_numeric($par['page']))
-				return e('params page error');
-		if($par['id'])
-			if(!is_numeric($par['id']))
-				return e('params id error');
-		if($par['limit'])
-			if(!is_numeric($par['limit']))
-				return e('params limit error');
+		if(!$this->validateForm($par,$error,false))
+			return e($error);
+
 		$r = $this->_read($par);
 		return $r ? s($r) : e('pdo error');
 	}
@@ -56,11 +67,8 @@ class Product extends Model{
 
 	public function remove($par){
 		$id = $par['id'];
-		if(!is_numeric($id))
-			return e('id type error');
-		$result = $this->_read(['id'=>$id]);
-		if(!$result)
-			return e('id unexists');
+		if(!$this->id_exists($id))
+			return e('id undefine.');
 		$r = $this->_remove(['condition'=>['id'=>$id]]);
 		return $r ? s(): e('未知错误.');
 	}
@@ -73,8 +81,10 @@ class Product extends Model{
 			return e('id unexists');
 		$newData = array_merge($oldData,$par);
 		unset($newData['id']);
-		$r = $this->_update(['where'=>['id'=>$id],'condition'=>$newData]);
-		return $r ? s():e('未知错误.');
+
+		$r = $this->_update(['where'=>['id'=>$id],'condition'=>$newData],$error);
+
+		return $r ? s():e($error?:'未知错误.');
 	}
 	public function id_exists($id){
 		$r = $this->_read(['id'=>$id]);
@@ -82,10 +92,29 @@ class Product extends Model{
 	}
 
 	public function test($par){
-		$r = $this->_read(
-			['like'=>['title'=>'11','price'=>11]]
-		);
-		var_dump($r);
+		// $r = $this->_read(
+		// 	['where'=>['price'=>11]] 
+		// );  
+
+		// $r = $this->validateString(true);
+
+
+		// $r = $this->add(['title'=>'1123','price'=>'1312','cat'=>'1','haha'=>'sasd','info'=>'123k']);
+
+		// $r = $this->validateOnly('弟弟','title');
+		// var_dump($r);
+
+
+		             
+		// $data = [
+		// 	'title'=>'huiyifan',
+		// 	'price'=>'998',
+		// 	'cat'=>'1'
+		// ];
+		// $r = $this->validateForm($data,$error);
+		// var_dump($r,$error);
+		
+
 		// 'where'=>['title'=>'111','price'=>111],
 	}
 }

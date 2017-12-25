@@ -6,7 +6,7 @@ $(function(){
 	el_form.addEventListener('submit',function(e){
 		e.preventDefault();
 		let data = get_Form_Data(e.target);
-		$.post('/api/open.php?model=user&action=login',data).then(function(res){
+		$.post('/a/user/login',data).then(function(res){
 			if(res.success)
 				window.location.href = '/home';
 			displayError(res.msg);

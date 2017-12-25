@@ -1,5 +1,5 @@
 <?php 
-class Model {
+class Model extends Validator{
 
 	/*
 	*
@@ -142,7 +142,7 @@ class Model {
 
 		$r = $this->pdo->prepare($sql);
 		$r->execute();
-		return $r->fetchALL(PDO::FETCH_ASSOC);
+		return $r->fetchALL(2);
 	}
 
 
@@ -251,6 +251,7 @@ class Model {
 		* 
 		* iteration arr generate sql statement.
 		*/
+
 		foreach ($arr as $key => $value) {
 			
 			/*
@@ -370,7 +371,7 @@ class Model {
 	* all table add core.
 	*
 	*/
-	public function _add($param){
+	public function _add($param,&$error=null,$valided = true){
 		/*
 		*
 		*
@@ -379,6 +380,10 @@ class Model {
 		*/
 		unset($param['id']);
 
+		if($valided)
+			if(!$this->validateForm($param,$error))
+				return false;
+			
 		/*
 		*
 		*
@@ -388,7 +393,6 @@ class Model {
 
 		$sql_value = $this->sql_comma($param,',',true);
 		$sql_col = $this->sql_comma($param,',');
-
 		/*
 		*
 		*
@@ -397,6 +401,8 @@ class Model {
 		*/
 		$sql ="insert into $this->table ($sql_col) values ($sql_value) ";
 		$r = $this->pdo->prepare($sql)->execute();
+		if(!$r)
+			$error = '未知错误.';
 		return $r;
 	}
 
@@ -455,7 +461,7 @@ class Model {
 	* core update method.
 	*
 	*/
-	public function _update($param){
+	public function _update($param,&$error){
 		/*
 		*
 		*
@@ -471,6 +477,12 @@ class Model {
 		* get data of param.  
 		*/
 		$data = $param['condition'];
+
+
+
+		if(!$this->validateForm($data,$error))
+			return false;
+
 
 		/*
 		*

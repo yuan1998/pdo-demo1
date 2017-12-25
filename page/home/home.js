@@ -19,7 +19,7 @@ $(function(){
 		if(loginout){
 			loginout.addEventListener('click',function(e){
 			e.preventDefault();
-			$.get('/api/open.php?model=user&action=loginout',function(res){
+			$.get('/a/user/loginout',function(res){
 				if(res.success)
 					window.location.reload();
 			})

@@ -1,4 +1,5 @@
 <?php 
+tpl('api/validator');
 tpl('api/model');
 tpl('api/cat');
 tpl('api/product');
@@ -68,7 +69,7 @@ function permisstionVerify($klass,$action){
 	$public = [
 		'User'=>['login','loginout','signup','changePassword','userExist','active','emailExist'],
 		'Cat'=>['read','printTrees'],
-		'Product'=>['read','getCount','test'],
+		'Product'=>['read','getCount','test','descTable'],
 	];
 
 

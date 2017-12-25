@@ -1,4 +1,5 @@
 <?php session_start();	
+	var_dump($_SESSION['user']);
 	if($_SESSION['user']['permissions'] < 2){
 		echo "404访问失败,权限不足.";
 		die();

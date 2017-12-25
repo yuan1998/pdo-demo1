@@ -10,8 +10,19 @@ class User extends Model{
 	public $pdo;
 	public $table = 'user';
 
+	public $rule = [
+		'id'=>'int|positive',
+		'username'=>'maxlength:20|minlength:6|only:username',
+		'password'=>'minlength:6|maxlength:30',
+		'email'=>'email|only:email'
+	];
+
+	public $unempty = ['username','password','email'];
+
 	public function __construct($pdo){
 		$this->pdo=$pdo;
+		parent::__construct();
+		
 	}
 
 	public function read($par){
@@ -38,15 +49,11 @@ class User extends Model{
 	public function signup($par){
 		$username = @$par['username'];
 		$password = @$par['password'];
-		if(!$username || $this->userExist($username))
-			return e('用户名错误或已存在.');
-		if(!$password)
-			return e('输入的密码有误.');
-		$email = filter_var(@$par['email'], FILTER_VALIDATE_EMAIL);
-		if(!$email)
-			return e('有误的邮箱.');
-		if($this->emailExist($email))
-			return e('邮箱已存在.');
+		$email = @$par['email'];
+
+		if(!$this->validateForm(['username'=>$username,'password'=>$password,'email'=>$email],$error))
+			return e($error);
+		
 		$regtime = time(); 
 		$token = md5($username.$password.$regtime);
 		$token_exptime = time()+60*60*24;
@@ -57,10 +64,14 @@ class User extends Model{
 				'token'=>$token,
 				'token_exptime'=>$token_exptime,
 				'regtime'=>$regtime];
-		$r = $this->_add($data);
+		$r = $this->_add($data,$error,false);
+		
 		if(!$r)
 			return e('未知错误');
+
+
 		die();
+
 		$mailer = new PHPMailer();
 		return $this->sendEmail($mailer,$email,$username,$token);
 	}
@@ -130,11 +141,16 @@ class User extends Model{
 		$user = $this->userVerify($par['username'],$par['password']);
 		if(!$user)
 			return e('用户名和密码有误.');
-		if($user['permissions'] = 0)
+		if($user['permissions'] == 0)
 			return e('用户已被封锁.');
-
-		$_SESSION['user'] = $user;
-		$_SESSION['user']['loginTime'] = time();
+		$_SESSION['user'] = [
+			'username'=>$user['username'],
+			'permissions'=>$user['permissions'],
+			'avatar_src'=>$user['avatar_src'],
+			'email'=>$user['mail'],
+			'regtime'=>$user['regtime'],
+			'logintime'=>time(),
+		];
 		return s();
 	}
 

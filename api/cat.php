@@ -5,6 +5,7 @@ class Cat extends Model{
 	public $table = 'cat'; 
 	public function __construct($pdo){
 		$this->pdo = $pdo;
+		parent::__construct();
 	}
 
 	public function add($params){
